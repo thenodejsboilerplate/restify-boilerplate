@@ -4,12 +4,12 @@ module.exports = {
   port: process.env.PORT || '8000', // PORT=9000 node app
   base_url: process.env.BASE_URL || 'http://localhost:8000',
   mongodb: {
-    dbname: 'forumApi',
+    dbname: 'api',
     host: 'localhost',
     port: 27017,
     user: '',
     pass: '',
-    uri: 'mongodb://localhost:27017/db1',
+    uri: 'mongodb://localhost:27017/api',
     options: {
       server: {
         poolSize: 5
