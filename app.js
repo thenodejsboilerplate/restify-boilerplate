@@ -1,10 +1,12 @@
 'use strict';
 const restify = require('restify');  
+const log = require('./src/common/sgLog');
 const config = require('./src/config/get-config');
+const util = require('./src/common/util');
 const server = restify.createServer({
   name    : config.name,
-  version : config.version	
-	//log:
+  version : config.version,
+  log: log
 });
 
 require('./src/libs/mongoose-connect');
@@ -19,27 +21,33 @@ server.use(restify.queryParser());
 server.use(restify.acceptParser(server.acceptable));
 
 
+//server.on('after', restify.auditLogger({log: log}));
+server.on('after', function(req, res, route, error){
+  // console.log(require('util').inspect(res));
+  let body = res._body;
+  log.info({req: req, res: res, code: body.code});
+});
+
+let wrapResult = require('./src/common/wrapResult');
 server.get('/', function(req,res,next){
   console.log('enteringinto frontpage');
-  res.send('frontpage');
+  res.json(wrapResult('HOME PAGE'));
   next();
 });
-server.get('/about', function(req,res,next){
-  console.log('entering into about');
-  res.send('frontpage about page');
-  next();
-});
+
 
 
 /**
  * Error Handling
  */
-server.on('uncaughtException', (req, res, route, err) => {
-  console.error(err.stack);
-  res.json(err);
+require('./src/common/promiseErrorHandling').rejectHandling();
+/*jslint unparam:true*/
+// Default error handler. Personalize according to your needs.
+server.on('uncaughtException', function (req, res, route, err) {
+  
+  util.errorProcess(req, res, err);
 });
-
-
+/*jslint unparam:false*/
 server.listen(config.port, function() {
   console.log('%s listening at %s', server.name, server.url);
 });
