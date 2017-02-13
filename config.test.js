@@ -3,6 +3,7 @@ module.exports = {
   version: '0.0.1',  
   port: process.env.PORT || '8000', // PORT=9000 node app
   base_url: process.env.BASE_URL || 'http://localhost:8000',
+  logLocation: '../../bunyan',
   mongodb: {
     dbname: 'api',
     host: 'localhost',

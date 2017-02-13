@@ -23,9 +23,9 @@ server.use(restify.acceptParser(server.acceptable));
 
 //server.on('after', restify.auditLogger({log: log}));
 server.on('after', function(req, res, route, error){
-  // console.log(require('util').inspect(res));
+   //console.log(require('util').inspect(res._body));
   let body = res._body;
-  log.info({req: req, res: res, code: body.code});
+  log.info({req: req, res: res, code: body.Code});
 });
 
 let wrapResult = require('./src/common/wrapResult');
@@ -34,7 +34,6 @@ server.get('/', function(req,res,next){
   res.json(wrapResult('HOME PAGE'));
   next();
 });
-
 
 
 /**

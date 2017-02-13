@@ -4,8 +4,10 @@
 const bunyan = require('bunyan');
 const SpecificLevelStream = require('./specialLevelStream');
 const fs = require('fs');
-const {mkdirRecursion} = require('./fileSystem');
+const path = require('path');
+const {mkdirSync} = require('./fileSystem');
 const {dirname, resolve} = require('path');
+const config = require('../config/get-config');
 
 function headersFilter(headers){
   return {
@@ -34,13 +36,21 @@ function errSerializer(err) {
 function codeSerializer(code){
   return code;
 }
+function getSeverName(serverName) {
+  return serverName;
+}
+function getCluster(cluster) {
+  return cluster;
+}
 
-// console.log(`process.mainModule.filename: ${dirname(process.mainModule.filename)}`);
-let bunyanDir = `${dirname(process.mainModule.filename)}/bunyan`;
-// mkdirRecursion(bunyanDir);
+let bunyanDir = path.normalize(config.logLocation);
+if(!path.isAbsolute(config.logLocation)){
+  bunyanDir = path.join(__dirname, config.logLocation);
+}
+mkdirSync(bunyanDir);
 
 var log2 = bunyan.createLogger({
-  name: 'api',
+  name: 'FgSAAS',
   streams: [ {
     level: 'info',
     type: 'raw',
@@ -56,12 +66,15 @@ var log2 = bunyan.createLogger({
     req: reqSerializer,
     res: resSerializer,
     err: errSerializer,
-    code: codeSerializer
+    code: codeSerializer,
+    serverName: getSeverName,
+    cluster: getCluster
   }
 
 });
 
 module.exports = log2;
+
 // log2.info('200 GET /blah');
 // log2.error('500 GET /boom');
 // module.exports = bunyan.createLogger({

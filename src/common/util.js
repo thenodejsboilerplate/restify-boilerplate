@@ -9,8 +9,9 @@ exports.errorProcess = function (req, res, err, code) {
     serverName: serverName,
     cluster: cluster.worker && cluster.workers.id
   });
-  // res.json(exports.wrapError(err, err.code || code));
+  res.json(exports.wrapError(err, err.code || code));
 };
+
 
 exports.wrapError = function (err, code) {
   if (!err || !['RouteError', 'ServiceError'].includes(err.constructor.name)) {
